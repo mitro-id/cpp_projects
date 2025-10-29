@@ -1,1 +1,2 @@
-homework/**/.vscode/
+# Ignore all .vscode folders recursively
+**/.vscode/
