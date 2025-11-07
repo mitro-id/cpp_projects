@@ -14,7 +14,7 @@ public:
     virtual ~Figure() = default;
 
     //operator=
-    virtual Figure& operator=(const Figure& other){return *this;};
+    virtual Figure& operator=(const Figure& other) = 0;
 
     //print
     friend std::ostream& operator<<(std::ostream& os, const Figure& figure);
@@ -32,8 +32,8 @@ public:
     Circle(double r): r_(r){
         if(r <= 0) throw std::runtime_error("Incorrect radius value");
     }
-    double area() const;
-    double perimeter() const;
+    double area() const override;
+    double perimeter() const override;
 
     Circle& operator=(const Circle& other) = default;
     Figure& operator=(const Figure& other) override;
@@ -50,8 +50,8 @@ public:
     Rectangle(double a, double b): a_(a), b_(b){
         if(a_ <= 0 || b_ <= 0) throw std::runtime_error("Incorrect width or height");
     }
-    double area() const;
-    double perimeter() const;
+    double area() const override;
+    double perimeter() const override;
 
     Rectangle& operator=(const Rectangle& other) = default;
     Figure& operator=(const Figure& other) override;
@@ -68,8 +68,8 @@ public:
     Ellipse(double a, double b): a_(a), b_(b){
         if(a_ <= 0 || b_ <= 0) throw std::runtime_error("Incorrect width or height");
     }
-    double area() const;
-    double perimeter() const;
+    double area() const override;
+    double perimeter() const override;
 
     Ellipse& operator=(const Ellipse& other) = default;
     Figure& operator=(const Figure& other) override;
@@ -77,7 +77,5 @@ public:
 protected:
     void print(std::ostream& os) const override;
 };
-
-#include "figure.tpp"
 
 #endif

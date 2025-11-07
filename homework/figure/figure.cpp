@@ -1,7 +1,7 @@
-#ifndef FIGURE_TPP
-#define FIGURE_TPP
 #include "figure.h"
 #include <cmath>
+#include <stdexcept>
+#include <typeinfo>
 
 std::ostream& operator<<(std::ostream& os, const Figure& figure) {
     figure.print(os);
@@ -21,7 +21,8 @@ Figure& Circle::operator=(const Figure& other){
     if(!figure){
         throw std::bad_cast();
     }
-    return operator=(*figure);
+    r_ = figure->r_;
+    return *this;
 }
 
 void Circle::print(std::ostream& os) const{
@@ -41,7 +42,9 @@ Figure& Rectangle::operator=(const Figure& other){
     if(!figure){
         throw std::bad_cast();
     }
-    return operator=(*figure);
+    a_ = figure->a_;
+    b_ = figure->b_;
+    return *this;
 }
 
 void Rectangle::print(std::ostream& os) const{
@@ -61,11 +64,11 @@ Figure& Ellipse::operator=(const Figure& other){
     if(!figure){
         throw std::bad_cast();
     }
-    return operator=(*figure);
+    a_ = figure->a_;
+    b_ = figure->b_;
+    return *this;
 }
 
 void Ellipse::print(std::ostream& os) const{
     os << "Ellipse info: \na, b = " << a_ << ", "<< b_ << "\narea = " << area() << "\nperimeter = " << perimeter() << std::endl;
 }
-
-#endif
