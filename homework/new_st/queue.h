@@ -4,7 +4,7 @@
 #include "dynamic_class.h"
 
 
-// реализация объявление и частичная реализация класса наследника Queue
+// объявление и частичная реализация класса наследника Queue
 template <typename T>
 class Queue : public fwd_container<T> {
 public:

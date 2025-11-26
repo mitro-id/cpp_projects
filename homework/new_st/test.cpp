@@ -163,7 +163,6 @@ TEST(StackTest, Stack_IO)
     std::stringstream sin("1 2 3 4 5");
     sin >> s;
 
-    // Проверим размер
     EXPECT_EQ(s.size(), 6);
 
     int expected[] = {5, 4, 3, 2, 1, 0};
@@ -478,3 +477,5 @@ int main(int argc, char** argv)
 
 // КОМПИЛЯЦИЯ
 // g++ -std=c++20 -Wall -Wextra -Werror -pedantic test.cpp -lgtest -lgtest_main -pthread -o test
+// VALGRIND
+// valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./test

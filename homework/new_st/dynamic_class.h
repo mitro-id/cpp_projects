@@ -8,14 +8,14 @@
 template<typename T>
 class fwd_container {
 public:
-    // обообщающий базовый итератор
+    // обобщающий базовый итератор
     class iterator_base_common {
     public:
         virtual ~iterator_base_common() = default;
         virtual iterator_base_common* clone() const = 0;
     };
 
-    // итератор, от которго будут наследоваться итераторы динамических классов
+    // итератор, от которого будут наследоваться итераторы динамических классов
     class iterator_base : public iterator_base_common {
     public:
         virtual T& operator*() = 0;
@@ -25,7 +25,7 @@ public:
         virtual bool operator!=(const iterator_base_common& other) const = 0;
     };
 
-    // константный интератор, от которго будут наследоваться итераторы динамических классов
+    // константный интератор, от которго будут наследоваться константные итераторы динамических классов
     class const_iterator_base : public iterator_base_common {
     public:
         virtual const T& operator*() const = 0;
@@ -48,7 +48,7 @@ public:
         using difference_type = std::ptrdiff_t;
         using pointer = T*;
         using reference = T&;
-
+        
         iterator() : base_(nullptr) {}
         iterator(iterator_base* base) : base_(base) {}
         
@@ -58,7 +58,7 @@ public:
             other.base_ = nullptr;
         }
         
-        ~iterator() = default;
+         ~iterator() { delete base_; }
         
         iterator& operator=(const iterator& other) {
             if (this != &other) {
@@ -142,7 +142,7 @@ public:
             other.base_ = nullptr;
         }
         
-        ~const_iterator() = default;
+         ~const_iterator() { delete base_; }
 
         const_iterator& operator=(const const_iterator& other) {
             if (this != &other) {

@@ -3,7 +3,7 @@
 
 #include "dynamic_class.h"
 
-// реализация объявление и частичная реализация класса наследника Stack
+// объявление и частичная реализация класса наследника Stack
 template <typename T>
 class Stack : public fwd_container<T> {
 public:
