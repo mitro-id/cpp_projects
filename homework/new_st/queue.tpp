@@ -1,240 +1,167 @@
 #ifndef QUEUE_TPP
 #define QUEUE_TPP
+
 #include "queue.h"
+#include <stdexcept>
 
+// реализация методов Queue
 template <typename T>
-Queue<T>::Queue(const Queue &other) : front_(nullptr), back_(nullptr), size_(0)
-{
-    if (!other.IsEmpty())
-    {
-        Node<T> *node = other.front_;
-        while (node != nullptr)
-        {
-            Push(node->data);
-            node = node->next;
+Queue<T>::Queue(const Queue& other) : front_(nullptr), back_(nullptr), size_(0) {
+    if (!other.is_empty()) {
+        const Node* current = other.front_;
+        while (current != nullptr) {
+            push(current->data);
+            current = current->next;
         }
-        size_ = other.size_;
     }
-} // +
+}
 
 template <typename T>
-Queue<T>::Queue(Queue &&other) noexcept : front_(other.front_), back_(other.back_), size_(other.size_)
-{
+Queue<T>::Queue(Queue&& other) noexcept 
+    : front_(other.front_), back_(other.back_), size_(other.size_) {
     other.front_ = nullptr;
     other.back_ = nullptr;
     other.size_ = 0;
-} // +
-
-template <typename T>
-Dynamic<T>& Queue<T>::operator=(const Dynamic<T>& other) {
-    const Queue<T>* queue_ptr = dynamic_cast<const Queue<T>*>(&other);
-    if (!queue_ptr) {
-        throw std::bad_cast();
-    }
-    return *this = *queue_ptr;
 }
 
 template <typename T>
-Dynamic<T>& Queue<T>::operator=(Dynamic<T>&& other) noexcept {
-    Queue<T>* queue_ptr = dynamic_cast<Queue<T>*>(&other);
-    if (queue_ptr) {
-        return *this = std::move(*queue_ptr);
-    }
-    return *this;
-}
-
-template <typename T>
-Queue<T> &Queue<T>::operator=(const Queue<T> &other)
-{
-    if (!other.IsEmpty() && this != &other)
-    {
-        Clear();
-        Node<T> *node = other.front_;
-        while (node != nullptr)
-        {
-            Push(node->data);
-            node = node->next;
+Queue<T>& Queue<T>::operator=(const Queue& other) {
+    if (this != &other) {
+        clear();
+        const Node* current = other.front_;
+        while (current != nullptr) {
+            push(current->data);
+            current = current->next;
         }
-        size_ = other.size_;
     }
     return *this;
-} // +
+}
 
 template <typename T>
-Queue<T> &Queue<T>::operator=(Queue<T> &&other) noexcept
-{
-    if (this != &other)
-    {
-        Clear();
-
+Queue<T>& Queue<T>::operator=(Queue&& other) noexcept {
+    if (this != &other) {
+        clear();
         front_ = other.front_;
         back_ = other.back_;
         size_ = other.size_;
-
+        
         other.front_ = nullptr;
         other.back_ = nullptr;
         other.size_ = 0;
     }
     return *this;
-} // +
-
-template <typename T>
-void Queue<T>::Push(const T &value)
-{
-    try
-    {
-        Node<T> *new_node = new Node<T>(value);
-        if (IsEmpty())
-        {
-            front_ = new_node;
-            back_ = new_node;
-        }
-        else
-        {
-            back_->next = new_node;
-            back_ = new_node;
-        }
-        size_++;
-    }
-    catch (const std::bad_alloc &e)
-    {
-        std::cerr << "Memory error in Queue::Push: " << e.what() << std::endl;
-        throw std::runtime_error("Memory error in Queue::Push");
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Unxcepted error in Queue::Push: " << e.what() << std::endl;
-        throw;
-    }
-} // +
-
-template <typename T>
-void Queue<T>::Push(T &&value)
-{
-    try
-    {
-        Node<T> *new_node = new Node<T>(std::move(value));
-        if (IsEmpty())
-        {
-            front_ = new_node;
-            back_ = new_node;
-        }
-        else
-        {
-            back_->next = new_node;
-            back_ = new_node;
-        }
-        size_++;
-    }
-    catch (const std::bad_alloc &e)
-    {
-        std::cerr << "Memory error in Queue::Push: " << e.what() << std::endl;
-        throw std::runtime_error("Memory error in Queue::Push ");
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Unxcepted error in Queue::Push: " << e.what() << std::endl;
-        throw;
-    }
-} // +
-
-template <typename T>
-T Queue<T>::Pop()
-{
-    if (IsEmpty())
-    {
-        throw std::runtime_error("Queue is empty");
-    }
-
-    try
-    {
-        T value = front_->data;
-        Node<T> *temp = front_;
-        front_ = front_->next;
-
-        if (front_ == nullptr)
-        {
-            back_ = nullptr;
-        }
-
-        delete temp;
-        size_--;
-        return value;
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Unexpected error in Queue::Pop: " << e.what() << std::endl;
-        throw;
-    }
-} // +
-
-template <typename T>
-T &Queue<T>::GetFront() const
-{
-    if (IsEmpty())
-    {
-        throw std::runtime_error("Empty error Queue::GetFront");
-    }
-    return front_->data;
-} // +
-
-template <typename T>
-T &Queue<T>::GetBack() const
-{
-    if (IsEmpty())
-    {
-        throw std::runtime_error("Empty error Queue::GetBack");
-    }
-    return back_->data;
-} // +
-
-template <typename T>
-bool Queue<T>::IsEmpty() const
-{
-    return front_ == nullptr;
-} // +
-
-template <typename T>
-size_t Queue<T>::Size() const
-{
-    return size_;
-} // +
-
-template <typename T>
-void Queue<T>::Clear()
-{
-    while (!IsEmpty())
-    {
-        Node<T> *node = front_;
-        front_ = front_->next;
-        delete node;
-    }
-    size_ = 0;
-} // +
-
-template <typename T>
-void Queue<T>::print(std::ostream& os) const {
-    Node<T> *node = front_;
-    os << "FRONT -> ";
-    while (node)
-    {
-        os << node->data << " ";
-        node = node->next;
-    }
-    os << " <- BACK";
 }
 
 template <typename T>
-void Queue<T>::input(std::istream& is) {
-    T value;
-    while (is >> value)
-    {
-        Push(value);
-        if (is.peek() == '\n')
-        {
-            break;
-        }
+void Queue<T>::push(const T& value) {
+    Node* new_node = new Node(value);
+    if (is_empty()) {
+        front_ = new_node;
+        back_ = new_node;
+    } else {
+        back_->next = new_node;
+        back_ = new_node;
     }
+    size_++;
+}
+
+template <typename T>
+void Queue<T>::push(T&& value) {
+    Node* new_node = new Node(std::move(value));
+    if (is_empty()) {
+        front_ = new_node;
+        back_ = new_node;
+    } else {
+        back_->next = new_node;
+        back_ = new_node;
+    }
+    size_++;
+}
+
+template <typename T>
+T Queue<T>::pop() {
+    if (is_empty()) {
+        throw std::runtime_error("Queue is empty");
+    }
+    
+    T value = front_->data;
+    Node* temp = front_;
+    front_ = front_->next;
+    
+    if (front_ == nullptr) {
+        back_ = nullptr;
+    }
+    
+    delete temp;
+    size_--;
+    return value;
+}
+
+template <typename T>
+T& Queue<T>::get_front() {
+    if (is_empty()) {
+        throw std::runtime_error("Queue is empty");
+    }
+    return front_->data;
+}
+
+template <typename T>
+const T& Queue<T>::get_front() const {
+    if (is_empty()) {
+        throw std::runtime_error("Queue is empty");
+    }
+    return front_->data;
+}
+
+template <typename T>
+bool Queue<T>::is_empty() const {
+    return front_ == nullptr;
+}
+
+template <typename T>
+size_t Queue<T>::size() const {
+    return size_;
+}
+
+template <typename T>
+void Queue<T>::clear() {
+    while (!is_empty()) {
+        Node* temp = front_;
+        front_ = front_->next;
+        delete temp;
+    }
+    back_ = nullptr;
+    size_ = 0;
+}
+
+template <typename T>
+typename Queue<T>::iterator Queue<T>::begin() {
+    return iterator(new typename Queue<T>::QueueIterator(front_));
+}
+
+template <typename T>
+typename Queue<T>::iterator Queue<T>::end() {
+    return iterator(new typename Queue<T>::QueueIterator(nullptr));
+}
+
+template <typename T>
+typename Queue<T>::const_iterator Queue<T>::begin() const {
+    return const_iterator(new typename Queue<T>::ConstQueueIterator(front_));
+}
+
+template <typename T>
+typename Queue<T>::const_iterator Queue<T>::end() const {
+    return const_iterator(new typename Queue<T>::ConstQueueIterator(nullptr));
+}
+
+template <typename T>
+typename Queue<T>::const_iterator Queue<T>::cbegin() const {
+    return const_iterator(new typename Queue<T>::ConstQueueIterator(front_));
+}
+
+template <typename T>
+typename Queue<T>::const_iterator Queue<T>::cend() const {
+    return const_iterator(new typename Queue<T>::ConstQueueIterator(nullptr));
 }
 
 #endif

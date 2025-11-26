@@ -1,23 +1,51 @@
 #ifndef STACK_TPP
 #define STACK_TPP
+
 #include "stack.h"
+#include <stdexcept>
+
+// реализация методов Stack
+template <typename T>
+Stack<T>::Stack(const Stack& other) : top_(nullptr), size_(0) {
+    if (!other.is_empty()) {
+        const Node* current_other = other.top_;
+        Node* current_new = nullptr;
+        
+        top_ = new Node(current_other->data);
+        current_new = top_;
+        current_other = current_other->next;
+        
+        while (current_other != nullptr) {
+            current_new->next = new Node(current_other->data);
+            current_new = current_new->next;
+            current_other = current_other->next;
+        }
+        
+        size_ = other.size_;
+    }
+}
 
 template <typename T>
-Stack<T>::Stack(const Stack &other) : top_(nullptr), size_(0)
-{
-    try{
-        if (!other.IsEmpty())
-        {
-            Node<T>* current_other = other.top_;
-            Node<T>* current_new = nullptr;
+Stack<T>::Stack(Stack&& other) noexcept : top_(other.top_), size_(other.size_) {
+    other.top_ = nullptr;
+    other.size_ = 0;
+}
+
+template <typename T>
+Stack<T>& Stack<T>::operator=(const Stack& other) {
+    if (this != &other) {
+        clear();
+        
+        if (!other.is_empty()) {
+            const Node* current_other = other.top_;
+            Node* current_new = nullptr;
             
-            top_ = new Node<T>(current_other->data);
+            top_ = new Node(current_other->data);
             current_new = top_;
             current_other = current_other->next;
             
-            while (current_other != nullptr)
-            {
-                current_new->next = new Node<T>(current_other->data);
+            while (current_other != nullptr) {
+                current_new->next = new Node(current_other->data);
                 current_new = current_new->next;
                 current_other = current_other->next;
             }
@@ -25,90 +53,13 @@ Stack<T>::Stack(const Stack &other) : top_(nullptr), size_(0)
             size_ = other.size_;
         }
     }
-    catch (const std::bad_alloc &e)
-    {
-        std::cerr << "Memory error in Stack copy constructor: " << e.what() << std::endl;
-        throw std::runtime_error("Memory error in Stack copy constructor");
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Unexpected error in Stack copy constructor: " << e.what() << std::endl;
-        throw;
-    }
-}
-
-template <typename T>
-Stack<T>::Stack(Stack &&other) noexcept : top_(other.top_), size_(other.size_)
-{
-    other.top_ = nullptr;
-    other.size_ = 0;
-}
-
-template <typename T>
-Dynamic<T>& Stack<T>::operator=(const Dynamic<T>& other) {
-    const Stack<T>* stack_ptr = dynamic_cast<const Stack<T>*>(&other);
-    if (!stack_ptr) {
-        throw std::bad_cast();
-    }
-    return *this = *stack_ptr;
-}
-
-template <typename T>
-Dynamic<T>& Stack<T>::operator=(Dynamic<T>&& other) noexcept {
-    Stack<T>* stack_ptr = dynamic_cast<Stack<T>*>(&other);
-    if (stack_ptr) {
-        return *this = std::move(*stack_ptr);
-    }
     return *this;
 }
 
 template <typename T>
-Stack<T> &Stack<T>::operator=(const Stack<T> &other)
-{
-    try{
-        if (this != &other)
-        {
-            Clear();
-            
-            if (!other.IsEmpty())
-            {
-                Node<T>* current_other = other.top_;
-                Node<T>* current_new = nullptr;
-                
-                top_ = new Node<T>(current_other->data);
-                current_new = top_;
-                current_other = current_other->next;
-                
-                while (current_other != nullptr)
-                {
-                    current_new->next = new Node<T>(current_other->data);
-                    current_new = current_new->next;
-                    current_other = current_other->next;
-                }
-                
-                size_ = other.size_;
-            }
-        }
-        return *this;
-    }
-    catch (const std::bad_alloc &e)
-    {
-        std::cerr << "Memory error in Stack::operator=: " << e.what() << std::endl;
-        throw std::runtime_error("Memory error in Stack::operator=");
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Unexpected error in Stack::operator=: " << e.what() << std::endl;
-        throw;
-    }
-}
-
-template <typename T>
-Stack<T> &Stack<T>::operator=(Stack<T> &&other) noexcept
-{
-    if (this != &other)
-    {
-        Clear();
+Stack<T>& Stack<T>::operator=(Stack&& other) noexcept {
+    if (this != &other) {
+        clear();
 
         top_ = other.top_;
         size_ = other.size_;
@@ -120,100 +71,65 @@ Stack<T> &Stack<T>::operator=(Stack<T> &&other) noexcept
 }
 
 template <typename T>
-void Stack<T>::Push(const T &value)
-{
-    try
-    {
-        Node<T> *node = new Node<T>(value);
-        node->next = top_;
-        top_ = node;
-        size_++;
-    }
-    catch (const std::bad_alloc &e)
-    {
-        std::cerr << "Memory error in Stack::Push: " << e.what() << std::endl;
-        throw std::runtime_error("Memory error in Stack::Push");
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Unexpected error in Stack::Push: " << e.what() << std::endl;
-        throw;
-    }
+void Stack<T>::push(const T& value) {
+    Node* node = new Node(value);
+    node->next = top_;
+    top_ = node;
+    size_++;
 }
 
 template <typename T>
-void Stack<T>::Push(T &&value)
-{
-    try
-    {
-        Node<T> *node = new Node<T>(std::move(value));
-        node->next = top_;
-        top_ = node;
-        size_++;
-    }
-    catch (const std::bad_alloc &e)
-    {
-        std::cerr << "Memory error in Stack::Push: " << e.what() << std::endl;
-        throw std::runtime_error("Memory error in Stack::Push");
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Unexpected error in Stack::Push: " << e.what() << std::endl;
-        throw;
-    }
+void Stack<T>::push(T&& value) {
+    Node* node = new Node(std::move(value));
+    node->next = top_;
+    top_ = node;
+    size_++;
 }
 
 template <typename T>
-T Stack<T>::Pop()
-{
-    if (IsEmpty())
-    {
+T Stack<T>::pop() {
+    if (is_empty()) {
         throw std::runtime_error("Stack is empty");
     }
-    try
-    {
-        T value = top_->data;
-        Node<T> *node = top_;
-        top_ = top_->next;
-        delete node;
-        size_--;
-        return value;
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Unexpected error in Stack::Pop: " << e.what() << std::endl;
-        throw;
-    }
+    
+    T value = top_->data;
+    Node* node = top_;
+    top_ = top_->next;
+    delete node;
+    size_--;
+    return value;
 }
 
 template <typename T>
-T &Stack<T>::GetFront() const
-{
-    if (IsEmpty())
-    {
-        throw std::runtime_error("Empty error in Stack::GetFront");
+T& Stack<T>::get_front() {
+    if (is_empty()) {
+        throw std::runtime_error("Stack is empty");
     }
     return top_->data;
 }
 
 template <typename T>
-bool Stack<T>::IsEmpty() const
-{
+const T& Stack<T>::get_front() const {
+    if (is_empty()) {
+        throw std::runtime_error("Stack is empty");
+    }
+    return top_->data;
+}
+
+template <typename T>
+bool Stack<T>::is_empty() const {
     return top_ == nullptr;
 }
 
 template <typename T>
-size_t Stack<T>::Size() const
-{
+size_t Stack<T>::size() const {
     return size_;
 }
 
 template <typename T>
-void Stack<T>::Clear()
-{
-    while (!IsEmpty())
-    {
-        Node<T> *node = top_;
+void Stack<T>::clear() {
+    while (!is_empty()) {
+        Node* node = top_;
         top_ = top_->next;
         delete node;
     }
@@ -221,27 +137,33 @@ void Stack<T>::Clear()
 }
 
 template <typename T>
-void Stack<T>::print(std::ostream& os) const {
-    Node<T> *node = top_;
-    os << "TOP -> ";
-    while (node)
-    {
-        os << node->data << " ";
-        node = node->next;
-    }
+typename Stack<T>::iterator Stack<T>::begin() {
+    return iterator(new typename Stack<T>::StackIterator(top_));
 }
 
 template <typename T>
-void Stack<T>::input(std::istream& is) {
-    T value;
-    while (is >> value)
-    {
-        Push(value);
-        if (is.peek() == '\n' || is.eof())
-        {
-            break;
-        }
-    }
+typename Stack<T>::iterator Stack<T>::end() {
+    return iterator(new typename Stack<T>::StackIterator(nullptr));
+}
+
+template <typename T>
+typename Stack<T>::const_iterator Stack<T>::begin() const {
+    return const_iterator(new typename Stack<T>::ConstStackIterator(top_));
+}
+
+template <typename T>
+typename Stack<T>::const_iterator Stack<T>::end() const {
+    return const_iterator(new typename Stack<T>::ConstStackIterator(nullptr));
+}
+
+template <typename T>
+typename Stack<T>::const_iterator Stack<T>::cbegin() const {
+    return const_iterator(new typename Stack<T>::ConstStackIterator(top_));
+}
+
+template <typename T>
+typename Stack<T>::const_iterator Stack<T>::cend() const {
+    return const_iterator(new typename Stack<T>::ConstStackIterator(nullptr));
 }
 
 #endif
