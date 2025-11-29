@@ -18,7 +18,6 @@ public:
 
     Queue& operator=(const Queue& other);
     Queue& operator=(Queue&& other) noexcept;
-
     void push(const T& value) override;
     void push(T&& value) override;
     T pop() override;
@@ -64,20 +63,18 @@ private:
         }
         
         QueueIterator& operator++() override {
-            if (current_) {
-                current_ = current_->next;
-            }
+            current_ = current_->next;
             return *this;
         }
         
         bool operator==(const typename fwd_container<T>::iterator_base_common& other) const override {
-            const QueueIterator* derived = dynamic_cast<const QueueIterator*>(&other);
-            return derived && current_ == derived->current_;
+            return current_ == static_cast<const QueueIterator&>(other).current_;
         }
         
         bool operator!=(const typename fwd_container<T>::iterator_base_common& other) const override {
             return !(*this == other);
         }
+        
         typename fwd_container<T>::iterator_base_common* clone() const override {
             return new QueueIterator(current_);
         }
@@ -99,20 +96,18 @@ private:
         }
         
         ConstQueueIterator& operator++() override {
-            if (current_) {
-                current_ = current_->next;
-            }
+            current_ = current_->next;
             return *this;
         }
         
         bool operator==(const typename fwd_container<T>::iterator_base_common& other) const override {
-            const ConstQueueIterator* derived = dynamic_cast<const ConstQueueIterator*>(&other);
-            return derived && current_ == derived->current_;
+            return current_ == static_cast<const ConstQueueIterator&>(other).current_;
         }
         
         bool operator!=(const typename fwd_container<T>::iterator_base_common& other) const override {
             return !(*this == other);
         }
+        
         typename fwd_container<T>::iterator_base_common* clone() const override {
             return new ConstQueueIterator(current_);
         }

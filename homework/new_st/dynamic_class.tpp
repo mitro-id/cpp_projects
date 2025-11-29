@@ -9,17 +9,13 @@ fwd_container<T>::iterator::iterator(const const_iterator& other)
 
 template<typename T>
 typename fwd_container<T>::iterator& fwd_container<T>::iterator::operator=(const const_iterator& other) {
-    if (this != &other) {
-        delete base_;
-        base_ = other.base_ ? static_cast<iterator_base*>(other.base_->clone()) : nullptr;
-    }
+    delete base_;
+    base_ = other.base_ ? static_cast<iterator_base*>(other.base_->clone()) : nullptr;
     return *this;
 }
 
 template<typename T>
 bool fwd_container<T>::iterator::operator==(const const_iterator& other) const {
-    if (!this->base_ && !other.base_) return true;
-    if (!this->base_ || !other.base_) return false;
     return *this->base_ == *other.base_;
 }
 
@@ -34,17 +30,13 @@ fwd_container<T>::const_iterator::const_iterator(const iterator& other)
 
 template<typename T>
 typename fwd_container<T>::const_iterator& fwd_container<T>::const_iterator::operator=(const iterator& other) {
-    if (this != &other) {
-        delete base_;
-        base_ = other.base_ ? static_cast<const_iterator_base*>(other.base_->clone()) : nullptr;
-    }
+    delete base_;
+    base_ = other.base_ ? static_cast<const_iterator_base*>(other.base_->clone()) : nullptr;
     return *this;
 }
 
 template<typename T>
 bool fwd_container<T>::const_iterator::operator==(const iterator& other) const {
-    if (!this->base_ && !other.base_) return true;
-    if (!this->base_ || !other.base_) return false;
     return *this->base_ == *other.base_;
 }
 

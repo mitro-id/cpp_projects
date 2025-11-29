@@ -62,20 +62,18 @@ private:
         }
         
         StackIterator& operator++() override {
-            if (current_) {
-                current_ = current_->next;
-            }
+            current_ = current_->next;
             return *this;
         }
         
         bool operator==(const typename fwd_container<T>::iterator_base_common& other) const override {
-            const StackIterator* derived = dynamic_cast<const StackIterator*>(&other);
-            return derived && current_ == derived->current_;
+            return current_ == static_cast<const StackIterator&>(other).current_;
         }
         
         bool operator!=(const typename fwd_container<T>::iterator_base_common& other) const override {
             return !(*this == other);
         }
+        
         typename fwd_container<T>::iterator_base_common* clone() const override {
             return new StackIterator(current_);
         }
@@ -97,20 +95,18 @@ private:
         }
         
         ConstStackIterator& operator++() override {
-            if (current_) {
-                current_ = current_->next;
-            }
+            current_ = current_->next;
             return *this;
         }
         
         bool operator==(const typename fwd_container<T>::iterator_base_common& other) const override {
-            const ConstStackIterator* derived = dynamic_cast<const ConstStackIterator*>(&other);
-            return derived && current_ == derived->current_;
+            return current_ == static_cast<const ConstStackIterator&>(other).current_;
         }
         
         bool operator!=(const typename fwd_container<T>::iterator_base_common& other) const override {
             return !(*this == other);
         }
+        
         typename fwd_container<T>::iterator_base_common* clone() const override {
             return new ConstStackIterator(current_);
         }

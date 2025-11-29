@@ -61,50 +61,38 @@ public:
          ~iterator() { delete base_; }
         
         iterator& operator=(const iterator& other) {
-            if (this != &other) {
-                delete base_;
-                base_ = other.base_ ? static_cast<iterator_base*>(other.base_->clone()) : nullptr;
-            }
+            delete base_;
+            base_ = other.base_ ? static_cast<iterator_base*>(other.base_->clone()) : nullptr;
             return *this;
         }
         
         iterator& operator=(iterator&& other) noexcept {
-            if (this != &other) {
-                delete base_;
-                base_ = other.base_;
-                other.base_ = nullptr;
-            }
+            delete base_;
+            base_ = other.base_;
+            other.base_ = nullptr;
             return *this;
         }
         
         reference operator*() { 
-            if (!base_) throw std::runtime_error("Dereferencing null iterator");
             return **base_; 
         }
         
-        pointer operator->() { 
-            if (!base_) throw std::runtime_error("Accessing through null iterator");
+        pointer operator->() {
             return &(**base_); 
         }
         
         iterator& operator++() {
-            if (base_) {
-                ++(*base_);
-            }
+            ++(*base_);
             return *this;
         }
         
         iterator operator++(int) {
             iterator temp = *this;
-            if (base_) {
-                ++(*base_);
-            }
+            ++(*base_);
             return temp;
         }
 
         bool operator==(const iterator& other) const {
-            if (!base_ && !other.base_) return true;
-            if (!base_ || !other.base_) return false;
             return *base_ == *other.base_;
         }
         
@@ -145,50 +133,38 @@ public:
          ~const_iterator() { delete base_; }
 
         const_iterator& operator=(const const_iterator& other) {
-            if (this != &other) {
-                delete base_;
-                base_ = other.base_ ? static_cast<const_iterator_base*>(other.base_->clone()) : nullptr;
-            }
+            delete base_;
+            base_ = other.base_ ? static_cast<const_iterator_base*>(other.base_->clone()) : nullptr;
             return *this;
         }
         
         const_iterator& operator=(const_iterator&& other) noexcept {
-            if (this != &other) {
-                delete base_;
-                base_ = other.base_;
-                other.base_ = nullptr;
-            }
+            delete base_;
+            base_ = other.base_;
+            other.base_ = nullptr;
             return *this;
         }
         
         reference operator*() const { 
-            if (!base_) throw std::runtime_error("Dereferencing null iterator");
             return **base_; 
         }
         
-        pointer operator->() const { 
-            if (!base_) throw std::runtime_error("Accessing through null iterator");
+        pointer operator->() const {
             return &(**base_); 
         }
         
         const_iterator& operator++() {
-            if (base_) {
-                ++(*base_);
-            }
+            ++(*base_);
             return *this;
         }
         
         const_iterator operator++(int) {
             const_iterator temp = *this;
-            if (base_) {
-                ++(*base_);
-            }
+            ++(*base_);
             return temp;
         }
         
         bool operator==(const const_iterator& other) const {
-            if (!base_ && !other.base_) return true;
-            if (!base_ || !other.base_) return false;
             return *base_ == *other.base_;
         }
         
